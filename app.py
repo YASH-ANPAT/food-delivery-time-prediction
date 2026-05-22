@@ -15,7 +15,7 @@ model = pickle.load(open("model.pkl", "rb"))
 app = Flask(__name__)
 
 
-# 🔥 FUNCTION: Get coordinates using OpenCage
+#  FUNCTION: Get coordinates using OpenCage
 def get_coordinates(place):
     url = "https://api.opencagedata.com/geocode/v1/json"
 
