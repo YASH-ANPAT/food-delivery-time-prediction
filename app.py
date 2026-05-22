@@ -15,34 +15,65 @@ model = pickle.load(open("model.pkl", "rb"))
 app = Flask(__name__)
 
 
+def render_page(prediction_text=None, log_values=None, status="idle"):
+    return render_template(
+        'index.html',
+        form_values={},
+        log_values=log_values or {},
+        prediction_text=prediction_text,
+        status=status
+    )
+
+
 #  FUNCTION: Get coordinates using OpenCage
 def get_coordinates(place):
+    if not API_KEY:
+        return None
+
     url = "https://api.opencagedata.com/geocode/v1/json"
+    if "," not in place:
+        search_terms = [
+            f"{place}, Pune, Maharashtra, India",
+            f"{place}, Maharashtra, India",
+            f"{place}, India",
+            place
+        ]
+    else:
+        search_terms = [place]
 
-    params = {
-        'q': place,
-        'key': API_KEY
-    }
+    for search_term in search_terms:
+        params = {
+            'q': search_term,
+            'key': API_KEY,
+            'countrycode': 'in',
+            'limit': 1,
+            'no_annotations': 1
+        }
 
-    response = requests.get(url, params=params)
+        try:
+            response = requests.get(url, params=params, timeout=10)
+        except requests.RequestException:
+            continue
 
-    if response.status_code != 200:
-        return None
+        if response.status_code != 200:
+            continue
 
-    data = response.json()
+        data = response.json()
 
-    if 'results' not in data or len(data['results']) == 0:
-        return None
+        if 'results' not in data or len(data['results']) == 0:
+            continue
 
-    lat = data['results'][0]['geometry']['lat']
-    lng = data['results'][0]['geometry']['lng']
+        lat = data['results'][0]['geometry']['lat']
+        lng = data['results'][0]['geometry']['lng']
 
-    return lat, lng
+        return lat, lng
+
+    return None
 
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_page()
 
 
 @app.route('/predict', methods=['POST'])
@@ -50,6 +81,7 @@ def predict():
     print(request.form)
     try:
         form_data = request.form
+        form_values = form_data.to_dict()
 
         # 🔹 Get numeric inputs
         age = float(form_data['f1'])
@@ -66,7 +98,11 @@ def predict():
         del_coords = get_coordinates(delivery)
 
         if rest_coords is None or del_coords is None:
-            return "❌ Location not found. Try different names."
+            return render_page(
+                prediction_text="Location not found. Try adding city/state to the location names.",
+                log_values=form_values,
+                status="error"
+            )
 
         rest_lat, rest_long = rest_coords
         del_lat, del_long = del_coords
@@ -116,13 +152,18 @@ def predict():
         # 🔹 Prediction
         prediction = model.predict(final_df)
 
-        return render_template(
-            'index.html',
-            prediction_text=f"Estimated Delivery Time: {prediction[0]:.2f} minutes"
+        return render_page(
+            prediction_text=f"Estimated Delivery Time: {prediction[0]:.2f} minutes",
+            log_values=form_values,
+            status="success"
         )
 
     except Exception as e:
-        return f"❌ Error: {str(e)}"
+        return render_page(
+            prediction_text=f"Error: {str(e)}",
+            log_values=request.form.to_dict(),
+            status="error"
+        )
 
 
 if __name__ == "__main__":

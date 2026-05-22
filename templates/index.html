@@ -7,341 +7,411 @@
     <style>
         :root {
             color-scheme: light;
-            --bg: #f7f4ee;
-            --surface: #ffffff;
-            --text: #1f2933;
-            --muted: #64748b;
+            --bg: #f5f7fb;
+            --panel: #ffffff;
+            --text: #17202a;
+            --muted: #667085;
             --line: #d8dee8;
+            --field: #f9fbfd;
             --primary: #0f766e;
-            --primary-dark: #115e59;
+            --primary-dark: #0b5f59;
             --accent: #f97316;
             --success-bg: #ecfdf5;
             --success-text: #047857;
-            --shadow: 0 24px 70px rgba(31, 41, 51, 0.14);
+            --warning-bg: #fff7ed;
+            --warning-text: #c2410c;
+            --danger-bg: #fff1f2;
+            --danger-text: #be123c;
         }
 
         * {
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            min-height: 100%;
+            margin: 0;
+        }
+
         body {
             min-height: 100vh;
-            margin: 0;
+            overflow: hidden;
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background:
-                radial-gradient(circle at top left, rgba(249, 115, 22, 0.16), transparent 32rem),
-                linear-gradient(135deg, #f7f4ee 0%, #edf7f5 100%);
+                linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(249, 115, 22, 0.06)),
+                var(--bg);
             color: var(--text);
         }
 
         .page {
-            width: min(1120px, calc(100% - 32px));
-            min-height: 100vh;
+            width: min(1180px, calc(100% - 32px));
+            height: 100vh;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: minmax(0, 0.9fr) minmax(340px, 1.1fr);
-            gap: 40px;
-            align-items: center;
-            padding: 48px 0;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 16px;
+            padding: 18px 0;
         }
 
-        .intro {
-            display: grid;
-            gap: 28px;
+        .topbar {
+            display: flex;
+            align-items: end;
+            justify-content: flex-start;
+            gap: 20px;
+        }
+
+        .title-block {
+            min-width: 0;
         }
 
         .eyebrow {
-            display: inline-flex;
-            width: fit-content;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border: 1px solid rgba(15, 118, 110, 0.22);
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.62);
+            margin: 0 0 6px;
             color: var(--primary-dark);
-            font-size: 0.84rem;
-            font-weight: 700;
-            text-transform: uppercase;
+            font-size: 0.78rem;
+            font-weight: 800;
             letter-spacing: 0.08em;
-        }
-
-        .eyebrow::before {
-            content: "";
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--accent);
+            text-transform: uppercase;
         }
 
         h1 {
-            max-width: 11ch;
             margin: 0;
-            font-size: clamp(3rem, 7vw, 5.8rem);
-            line-height: 0.95;
+            font-size: clamp(1.9rem, 4vw, 3.4rem);
+            line-height: 1;
             letter-spacing: 0;
         }
 
-        .intro p {
-            max-width: 560px;
-            margin: 0;
-            color: var(--muted);
-            font-size: 1.08rem;
-            line-height: 1.7;
-        }
-
-        .stats {
+        .workspace {
+            min-height: 0;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            max-width: 560px;
-        }
-
-        .stat {
-            min-height: 94px;
-            padding: 18px;
-            border: 1px solid rgba(15, 118, 110, 0.14);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.72);
-        }
-
-        .stat strong {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--primary-dark);
-            font-size: 1.55rem;
-            line-height: 1;
-        }
-
-        .stat span {
-            color: var(--muted);
-            font-size: 0.9rem;
-            line-height: 1.35;
+            grid-template-columns: minmax(390px, 0.95fr) minmax(340px, 0.8fr);
+            gap: 16px;
+            align-items: stretch;
         }
 
         .panel {
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            min-height: 0;
+            border: 1px solid rgba(23, 32, 42, 0.10);
             border-radius: 8px;
-            background: var(--surface);
-            box-shadow: var(--shadow);
+            background: var(--panel);
+            box-shadow: 0 20px 48px rgba(23, 32, 42, 0.10);
             overflow: hidden;
         }
 
-        .panel-header {
-            padding: 28px 30px 22px;
+        .panel-head {
+            padding: 18px 22px 14px;
             border-bottom: 1px solid var(--line);
         }
 
-        .panel-header h2 {
-            margin: 0 0 8px;
-            font-size: 1.65rem;
+        .panel-head h2 {
+            margin: 0 0 4px;
+            font-size: 1.25rem;
             letter-spacing: 0;
         }
 
-        .panel-header p {
+        .panel-head p {
             margin: 0;
             color: var(--muted);
-            line-height: 1.55;
+            font-size: 0.9rem;
+            line-height: 1.45;
         }
 
         form {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-            padding: 30px;
+            gap: 12px;
+            padding: 18px 22px 22px;
         }
 
         .field {
             display: grid;
-            gap: 8px;
+            gap: 5px;
         }
 
-        .field.wide {
+        .wide {
             grid-column: 1 / -1;
         }
 
         label {
-            color: #334155;
-            font-size: 0.92rem;
-            font-weight: 700;
+            color: #344054;
+            font-size: 0.84rem;
+            font-weight: 800;
         }
 
         input {
             width: 100%;
-            min-height: 48px;
-            padding: 12px 14px;
+            min-height: 40px;
+            padding: 9px 12px;
             border: 1px solid var(--line);
             border-radius: 8px;
-            background: #fbfdff;
+            background: #ffffff;
             color: var(--text);
             font: inherit;
             outline: none;
-            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
-        }
-
-        input::placeholder {
-            color: #94a3b8;
         }
 
         input:focus {
             border-color: var(--primary);
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.13);
         }
 
         .hint {
             color: var(--muted);
-            font-size: 0.82rem;
-            line-height: 1.4;
+            font-size: 0.75rem;
+            line-height: 1.25;
         }
 
         button {
             grid-column: 1 / -1;
-            min-height: 52px;
+            min-height: 46px;
             margin-top: 4px;
             border: 0;
             border-radius: 8px;
             background: var(--primary);
             color: white;
             font: inherit;
-            font-size: 1rem;
-            font-weight: 800;
+            font-weight: 850;
             cursor: pointer;
-            box-shadow: 0 12px 26px rgba(15, 118, 110, 0.24);
-            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+            box-shadow: 0 10px 22px rgba(15, 118, 110, 0.20);
         }
 
         button:hover {
             background: var(--primary-dark);
-            box-shadow: 0 16px 34px rgba(15, 118, 110, 0.28);
-            transform: translateY(-1px);
         }
 
-        button:active {
-            transform: translateY(0);
+        .output-panel {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+        }
+
+        .result-area {
+            display: grid;
+            gap: 12px;
+            padding: 18px 22px 22px;
+            min-height: 0;
         }
 
         .result {
-            grid-column: 1 / -1;
-            min-height: 58px;
-            display: flex;
-            align-items: center;
-            padding: 16px 18px;
-            border: 1px dashed rgba(15, 118, 110, 0.35);
+            min-height: 86px;
+            display: grid;
+            align-content: center;
+            gap: 6px;
+            padding: 16px;
+            border: 1px solid rgba(15, 118, 110, 0.26);
             border-radius: 8px;
             background: var(--success-bg);
             color: var(--success-text);
-            font-size: 1.04rem;
+            font-weight: 850;
+        }
+
+        .result.placeholder {
+            border-color: var(--line);
+            background: #f8fafc;
+            color: var(--muted);
+        }
+
+        .result.error {
+            border-color: rgba(190, 18, 60, 0.22);
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        .result small {
+            color: inherit;
+            font-size: 0.78rem;
+            font-weight: 750;
+            opacity: 0.78;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .result strong {
+            font-size: 1.18rem;
+            line-height: 1.25;
+        }
+
+        .log {
+            min-height: 0;
+            overflow: auto;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fbfcfe;
+        }
+
+        .log-item {
+            min-width: 0;
+            padding: 10px;
+            border: 1px solid #edf1f6;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .log-item span {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--muted);
+            font-size: 0.72rem;
             font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .result:empty {
-            display: none;
+        .log-item strong {
+            display: block;
+            color: var(--text);
+            font-size: 0.92rem;
+            line-height: 1.28;
+            overflow-wrap: anywhere;
         }
 
-        @media (max-width: 840px) {
-            .page {
-                grid-template-columns: 1fr;
-                gap: 28px;
-                align-items: start;
-                padding: 32px 0;
+        .empty-log {
+            color: var(--muted);
+        }
+
+        @media (max-width: 900px) {
+            body {
+                overflow: auto;
             }
 
-            h1 {
-                max-width: 100%;
-                font-size: clamp(2.6rem, 12vw, 4.5rem);
+            .page {
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .topbar,
+            .workspace {
+                grid-template-columns: 1fr;
+                display: grid;
             }
         }
 
         @media (max-width: 560px) {
             .page {
-                width: min(100% - 24px, 1120px);
+                width: min(100% - 22px, 1180px);
             }
 
-            .stats,
-            form {
+            form,
+            .log {
                 grid-template-columns: 1fr;
             }
 
-            .panel-header,
-            form {
-                padding: 22px;
+            .panel-head,
+            form,
+            .result-area {
+                padding-left: 16px;
+                padding-right: 16px;
             }
         }
     </style>
 </head>
-
 <body>
     <main class="page">
-        <section class="intro" aria-labelledby="page-title">
-            <div class="eyebrow">Food delivery estimate</div>
-            <div>
-                <h1 id="page-title">Delivery Time Predictor</h1>
-                <p>Enter courier and route details to get a quick delivery-time estimate using the trained prediction model.</p>
+        <header class="topbar">
+            <div class="title-block">
+                <p class="eyebrow">Food delivery estimate</p>
+                <h1>Delivery Time Predictor</h1>
             </div>
+        </header>
 
-            <div class="stats" aria-label="Input summary">
-                <div class="stat">
-                    <strong>6</strong>
-                    <span>inputs used for each estimate</span>
-                </div>
-                <div class="stat">
-                    <strong>2</strong>
-                    <span>locations converted to coordinates</span>
-                </div>
-                <div class="stat">
-                    <strong>min</strong>
-                    <span>prediction shown in minutes</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="panel" aria-labelledby="form-title">
-            <div class="panel-header">
-                <h2 id="form-title">Estimate a delivery</h2>
-                <p>Use specific area names for better location matching.</p>
-            </div>
-
-            <form action="/predict" method="post">
-                <div class="field">
-                    <label for="age">Delivery partner age</label>
-                    <input id="age" type="number" name="f1" placeholder="18-60" min="18" max="60" required>
-                    <span class="hint">Accepted range: 18 to 60</span>
+        <div class="workspace">
+            <section class="panel" aria-labelledby="form-title">
+                <div class="panel-head">
+                    <h2 id="form-title">Delivery details</h2>
+                    <p>Use specific area names for better location matching.</p>
                 </div>
 
-                <div class="field">
-                    <label for="rating">Delivery partner rating</label>
-                    <input id="rating" type="number" name="f2" placeholder="1.0-5.0" min="1" max="5" step="0.1" required>
-                    <span class="hint">Use one decimal if needed</span>
+                <form action="/predict" method="post">
+                    <div class="field">
+                        <label for="age">Partner age</label>
+                        <input id="age" type="number" name="f1" value="{{ form_values.get('f1', '') }}" placeholder="18-60" min="18" max="60" required>
+                        <span class="hint">Accepted range: 18 to 60</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="rating">Partner rating</label>
+                        <input id="rating" type="number" name="f2" value="{{ form_values.get('f2', '') }}" placeholder="1.0-5.0" min="1" max="5" step="0.1" required>
+                        <span class="hint">Use one decimal if needed</span>
+                    </div>
+
+                    <div class="field wide">
+                        <label for="restaurant">Restaurant location</label>
+                        <input id="restaurant" type="text" name="restaurant" value="{{ form_values.get('restaurant', '') }}" placeholder="Example: Connaught Place, Delhi" required>
+                    </div>
+
+                    <div class="field wide">
+                        <label for="delivery">Delivery location</label>
+                        <input id="delivery" type="text" name="delivery" value="{{ form_values.get('delivery', '') }}" placeholder="Example: Karol Bagh, Delhi" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="vehicle">Vehicle condition</label>
+                        <input id="vehicle" type="number" name="f7" value="{{ form_values.get('f7', '') }}" placeholder="0-2" min="0" max="2" required>
+                        <span class="hint">0 is lowest, 2 is best</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="deliveries">Grouped orders</label>
+                        <input id="deliveries" type="number" name="f8" value="{{ form_values.get('f8', '') }}" placeholder="0-3" min="0" max="3" required>
+                        <span class="hint">Active grouped deliveries</span>
+                    </div>
+
+                    <button type="submit">Predict delivery time</button>
+                </form>
+            </section>
+
+            <section class="panel output-panel" aria-labelledby="output-title">
+                <div class="panel-head">
+                    <h2 id="output-title">Output log</h2>
+                    <p>The result and the exact submitted inputs stay here.</p>
                 </div>
 
-                <div class="field wide">
-                    <label for="restaurant">Restaurant location</label>
-                    <input id="restaurant" type="text" name="restaurant" placeholder="Example: Connaught Place, Delhi" required>
+                <div class="result-area">
+                    {% if prediction_text %}
+                        <div class="result {{ 'error' if status == 'error' else '' }}" role="status" aria-live="polite">
+                            <small>{{ 'Needs attention' if status == 'error' else 'Latest estimate' }}</small>
+                            <strong>{{ prediction_text }}</strong>
+                        </div>
+                    {% else %}
+                        <div class="result placeholder" role="status" aria-live="polite">
+                            <small>Waiting</small>
+                            <strong>Your estimate will appear here.</strong>
+                        </div>
+                    {% endif %}
+
+                    <div class="log" aria-label="Last submitted inputs">
+                        <div class="log-item">
+                            <span>Age</span>
+                            <strong class="{{ 'empty-log' if not log_values.get('f1') else '' }}">{{ log_values.get('f1') or '-' }}</strong>
+                        </div>
+                        <div class="log-item">
+                            <span>Rating</span>
+                            <strong class="{{ 'empty-log' if not log_values.get('f2') else '' }}">{{ log_values.get('f2') or '-' }}</strong>
+                        </div>
+                        <div class="log-item">
+                            <span>Restaurant</span>
+                            <strong class="{{ 'empty-log' if not log_values.get('restaurant') else '' }}">{{ log_values.get('restaurant') or '-' }}</strong>
+                        </div>
+                        <div class="log-item">
+                            <span>Delivery</span>
+                            <strong class="{{ 'empty-log' if not log_values.get('delivery') else '' }}">{{ log_values.get('delivery') or '-' }}</strong>
+                        </div>
+                        <div class="log-item">
+                            <span>Vehicle</span>
+                            <strong class="{{ 'empty-log' if not log_values.get('f7') else '' }}">{{ log_values.get('f7') or '-' }}</strong>
+                        </div>
+                        <div class="log-item">
+                            <span>Grouped orders</span>
+                            <strong class="{{ 'empty-log' if not log_values.get('f8') else '' }}">{{ log_values.get('f8') or '-' }}</strong>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="field wide">
-                    <label for="delivery">Delivery location</label>
-                    <input id="delivery" type="text" name="delivery" placeholder="Example: Karol Bagh, Delhi" required>
-                </div>
-
-                <div class="field">
-                    <label for="vehicle">Vehicle condition</label>
-                    <input id="vehicle" type="number" name="f7" placeholder="0-2" min="0" max="2" required>
-                    <span class="hint">0 is lowest, 2 is best</span>
-                </div>
-
-                <div class="field">
-                    <label for="deliveries">Multiple deliveries</label>
-                    <input id="deliveries" type="number" name="f8" placeholder="0-3" min="0" max="3" required>
-                    <span class="hint">Number of active grouped orders</span>
-                </div>
-
-                <button type="submit">Predict delivery time</button>
-
-                <div class="result" role="status" aria-live="polite">{{ prediction_text }}</div>
-            </form>
-        </section>
+            </section>
+        </div>
     </main>
 </body>
 </html>
