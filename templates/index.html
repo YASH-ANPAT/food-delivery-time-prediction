@@ -1,85 +1,347 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivery Time Predictor</title>
     <style>
-        body {
-            font-family: Arial;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            text-align: center;
-            padding: 40px;
+        :root {
+            color-scheme: light;
+            --bg: #f7f4ee;
+            --surface: #ffffff;
+            --text: #1f2933;
+            --muted: #64748b;
+            --line: #d8dee8;
+            --primary: #0f766e;
+            --primary-dark: #115e59;
+            --accent: #f97316;
+            --success-bg: #ecfdf5;
+            --success-text: #047857;
+            --shadow: 0 24px 70px rgba(31, 41, 51, 0.14);
         }
 
-        .container {
-            background: white;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(249, 115, 22, 0.16), transparent 32rem),
+                linear-gradient(135deg, #f7f4ee 0%, #edf7f5 100%);
+            color: var(--text);
+        }
+
+        .page {
+            width: min(1120px, calc(100% - 32px));
+            min-height: 100vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(340px, 1.1fr);
+            gap: 40px;
+            align-items: center;
+            padding: 48px 0;
+        }
+
+        .intro {
+            display: grid;
+            gap: 28px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border: 1px solid rgba(15, 118, 110, 0.22);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.62);
+            color: var(--primary-dark);
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        h1 {
+            max-width: 11ch;
+            margin: 0;
+            font-size: clamp(3rem, 7vw, 5.8rem);
+            line-height: 0.95;
+            letter-spacing: 0;
+        }
+
+        .intro p {
+            max-width: 560px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.08rem;
+            line-height: 1.7;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            max-width: 560px;
+        }
+
+        .stat {
+            min-height: 94px;
+            padding: 18px;
+            border: 1px solid rgba(15, 118, 110, 0.14);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .stat strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--primary-dark);
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.35;
+        }
+
+        .panel {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 28px 30px 22px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .panel-header h2 {
+            margin: 0 0 8px;
+            font-size: 1.65rem;
+            letter-spacing: 0;
+        }
+
+        .panel-header p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
             padding: 30px;
-            border-radius: 15px;
-            width: 400px;
-            margin: auto;
-            box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field.wide {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: #334155;
+            font-size: 0.92rem;
+            font-weight: 700;
         }
 
         input {
-            width: 90%;
-            padding: 10px;
-            margin: 8px;
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
             border-radius: 8px;
-            border: 1px solid #ccc;
+            background: #fbfdff;
+            color: var(--text);
+            font: inherit;
+            outline: none;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.4;
         }
 
         button {
-            background: #4facfe;
-            color: white;
-            padding: 12px;
-            border: none;
+            grid-column: 1 / -1;
+            min-height: 52px;
+            margin-top: 4px;
+            border: 0;
             border-radius: 8px;
-            width: 95%;
-            font-size: 16px;
+            background: var(--primary);
+            color: white;
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 800;
             cursor: pointer;
+            box-shadow: 0 12px 26px rgba(15, 118, 110, 0.24);
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
         }
 
         button:hover {
-            background: #00c6ff;
+            background: var(--primary-dark);
+            box-shadow: 0 16px 34px rgba(15, 118, 110, 0.28);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .result {
-            margin-top: 20px;
-            font-size: 18px;
-            color: green;
-            font-weight: bold;
+            grid-column: 1 / -1;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            padding: 16px 18px;
+            border: 1px dashed rgba(15, 118, 110, 0.35);
+            border-radius: 8px;
+            background: var(--success-bg);
+            color: var(--success-text);
+            font-size: 1.04rem;
+            font-weight: 800;
+        }
+
+        .result:empty {
+            display: none;
+        }
+
+        @media (max-width: 840px) {
+            .page {
+                grid-template-columns: 1fr;
+                gap: 28px;
+                align-items: start;
+                padding: 32px 0;
+            }
+
+            h1 {
+                max-width: 100%;
+                font-size: clamp(2.6rem, 12vw, 4.5rem);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page {
+                width: min(100% - 24px, 1120px);
+            }
+
+            .stats,
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .panel-header,
+            form {
+                padding: 22px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <main class="page">
+        <section class="intro" aria-labelledby="page-title">
+            <div class="eyebrow">Food delivery estimate</div>
+            <div>
+                <h1 id="page-title">Delivery Time Predictor</h1>
+                <p>Enter courier and route details to get a quick delivery-time estimate using the trained prediction model.</p>
+            </div>
 
-<div class="container">
+            <div class="stats" aria-label="Input summary">
+                <div class="stat">
+                    <strong>6</strong>
+                    <span>inputs used for each estimate</span>
+                </div>
+                <div class="stat">
+                    <strong>2</strong>
+                    <span>locations converted to coordinates</span>
+                </div>
+                <div class="stat">
+                    <strong>min</strong>
+                    <span>prediction shown in minutes</span>
+                </div>
+            </div>
+        </section>
 
-    <h2>🚚 Delivery Time Predictor</h2>
+        <section class="panel" aria-labelledby="form-title">
+            <div class="panel-header">
+                <h2 id="form-title">Estimate a delivery</h2>
+                <p>Use specific area names for better location matching.</p>
+            </div>
 
-    <form action="/predict" method="post">
+            <form action="/predict" method="post">
+                <div class="field">
+                    <label for="age">Delivery partner age</label>
+                    <input id="age" type="number" name="f1" placeholder="18-60" min="18" max="60" required>
+                    <span class="hint">Accepted range: 18 to 60</span>
+                </div>
 
-        <input type="number" name="f1" placeholder="Age (18-60)" min="18" max="60" required>
+                <div class="field">
+                    <label for="rating">Delivery partner rating</label>
+                    <input id="rating" type="number" name="f2" placeholder="1.0-5.0" min="1" max="5" step="0.1" required>
+                    <span class="hint">Use one decimal if needed</span>
+                </div>
 
-        <input type="number" name="f2" placeholder="Rating (1-5)" min="1" max="5" step="0.1" required>
+                <div class="field wide">
+                    <label for="restaurant">Restaurant location</label>
+                    <input id="restaurant" type="text" name="restaurant" placeholder="Example: Connaught Place, Delhi" required>
+                </div>
 
-        <input type="text" name="restaurant" placeholder="Restaurant Location" required>
+                <div class="field wide">
+                    <label for="delivery">Delivery location</label>
+                    <input id="delivery" type="text" name="delivery" placeholder="Example: Karol Bagh, Delhi" required>
+                </div>
 
-        <input type="text" name="delivery" placeholder="Delivery Location" required>
+                <div class="field">
+                    <label for="vehicle">Vehicle condition</label>
+                    <input id="vehicle" type="number" name="f7" placeholder="0-2" min="0" max="2" required>
+                    <span class="hint">0 is lowest, 2 is best</span>
+                </div>
 
-        <input type="number" name="f7" placeholder="Vehicle Condition (0-2)" min="0" max="2" required>
+                <div class="field">
+                    <label for="deliveries">Multiple deliveries</label>
+                    <input id="deliveries" type="number" name="f8" placeholder="0-3" min="0" max="3" required>
+                    <span class="hint">Number of active grouped orders</span>
+                </div>
 
-        <input type="number" name="f8" placeholder="Multiple Deliveries (0-3)" min="0" max="3" required>
+                <button type="submit">Predict delivery time</button>
 
-        <button type="submit">Predict Delivery Time</button>
-
-    </form>
-
-    <div class="result">
-        {{ prediction_text }}
-    </div>
-
-</div>
-
+                <div class="result" role="status" aria-live="polite">{{ prediction_text }}</div>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
